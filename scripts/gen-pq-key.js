@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-function generatePqPublicKey(bytes = 64) {
+function generatePqPublicKey(bytes = 96) {
     const buf = crypto.randomBytes(bytes);
     return "0x" + buf.toString("hex");
 }
