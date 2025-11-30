@@ -56,7 +56,15 @@ if (!targetFile) {
 
 const result = analyzeContract(targetFile);
 
-const savePath = `tools/smart-contract-analyzer/report-output/${Date.now()}-analysis.json`;
+// const savePath = `tools/smart-contract-analyzer/report-output/${Date.now()}-analysis.json`;
+// fs.writeFileSync(savePath, JSON.stringify(result, null, 2));
+
+const reportsDir = path.join(__dirname, "report-output");
+if (!fs.existsSync(reportsDir)) {
+  fs.mkdirSync(reportsDir, { recursive: true });
+}
+
+const savePath = path.join(reportsDir, `${Date.now()}-analysis.json`);
 fs.writeFileSync(savePath, JSON.stringify(result, null, 2));
 
 console.log("\n📄 Analysis complete");

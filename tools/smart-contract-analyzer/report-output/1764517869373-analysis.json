@@ -1,0 +1,7 @@
+{
+  "contract": "QuantumSafeWallet.sol",
+  "ecrecoverCount": 0,
+  "publicKeyExposureCount": 8,
+  "riskScore": 80,
+  "warnings": []
+}
