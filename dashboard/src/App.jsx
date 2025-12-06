@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import WalletStatusCard from "./WalletStatusCard";
 
 const BACKEND_URL = "http://localhost:5000";
 
@@ -211,6 +212,7 @@ const App = () => {
 
         {/* Right column */}
         <section className="space-y-4">
+          <WalletStatusCard />
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-xl shadow-cyan-900/40">
             <h2 className="text-sm font-semibold text-slate-100 mb-1">
               Scan Contract for Quantum Risk

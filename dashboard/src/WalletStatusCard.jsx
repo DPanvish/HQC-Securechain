@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { ethers } from "ethers";
-import { RPC_URL, QSW_ADDRESS, QSW_ABI } from "./walletConfig";
+import { RPC_URL, QSW_ADDRESS, QSW_ABI } from "./config";
 
 
-const modelLabel = (mode) => {
+const modeLabel = (mode) => {
     if(mode === 0){
         return "CLASSICAL_ONLY";
     }
@@ -113,7 +113,7 @@ const WalletStatusCard = () => {
             <button
                 onClick={fetchStatus}
                 disabled={loading}
-                className="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-cyan-400 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full inline-flex items-center justify-center rounded-xl bg-linear-to-r from-indigo-500 to-cyan-500 px-4 py-2 text-xs font-semibold text-white shadow-lg shadow-indigo-900/40 hover:from-indigo-400 hover:to-cyan-400 disabled:opacity-60 disabled:cursor-not-allowed"
             >
                 {loading ? "Checking…" : "Check Wallet Status"}
             </button>
