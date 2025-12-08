@@ -3,6 +3,7 @@ const cors = require("cors");
 const { execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 
 const app = express();
 app.use(cors());
@@ -101,6 +102,17 @@ app.get("/risk-summary", (req, res) => {
     return res.status(500).json({ error: err.toString() });
   }
 });
+
+// Simulated quantum random
+app.get("/qrng", (req, res) => {
+  const buf = crypto.randomBytes(32);
+  const hex = "0x" + buf.toString("hex");
+
+  res.json({
+    source: "simulated-qrng",
+    bytes: hex,
+  })
+})
 
 const PORT = 5000;
 app.listen(PORT, () => {
