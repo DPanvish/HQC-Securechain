@@ -4,7 +4,7 @@ const crypto = require("crypto");
 async function main() {
   const [admin, user1, user2, user3] = await ethers.getSigners();
 
-  const lotteryAddress = "0xYOUR_LOTTERY_ADDRESS_HERE"; // paste from deploy log
+  const lotteryAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
   const lottery = await ethers.getContractAt("QuantumRandomLottery", lotteryAddress, admin);
 
   console.log("Current round:", (await lottery.currentRoundId()).toString());
