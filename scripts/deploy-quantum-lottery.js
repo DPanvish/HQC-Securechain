@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners(); 
 
   console.log("Deploying QuantumRandomLottery from:", deployer.address);
 
