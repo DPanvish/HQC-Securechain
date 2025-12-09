@@ -4,6 +4,8 @@ const { execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
+const bodyParser = require("body-parser");
+const { getProvider, getAdminSigner, getLotteryContract } = require("./lottery-oracle");
 
 const app = express();
 app.use(cors());
@@ -113,6 +115,53 @@ app.get("/qrng", (req, res) => {
     bytes: hex,
   })
 })
+
+// Request: optionally call on-chain requestRandomness (emits event)
+app.post("/lottery/request", async (req, res) => {
+  try {
+    const signer = getAdminSigner();
+    const lottery = getLotteryContract(signer);
+    // call requestRandomness on chain so logs show intention (optional)
+    const tx = await lottery.requestRandomness();
+    await tx.wait();
+    res.json({ status: "ok", tx: tx.hash });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", error: err.message });
+  }
+});
+
+// Fulfill: backend fetches QRNG and calls fulfillRandomness() as admin
+app.post("/lottery/fulfill", async (req, res) => {
+  // Optionally accept `randomHex` in body to allow deterministic testing.
+  try {
+    const randomHex = req.body.randomHex || (await (await fetchQRNG()).then(r => r.bytes));
+    if (!randomHex.startsWith("0x") || randomHex.length !== 66) {
+      return res.status(400).json({ status: "error", error: "randomHex must be 0x-prefixed 32-byte hex" });
+    }
+
+    const signer = getAdminSigner();
+    const lottery = getLotteryContract(signer);
+
+    const tx = await lottery.fulfillRandomness(randomHex);
+    await tx.wait();
+
+    // After settlement, we can fetch round info for the previous round
+    const prevRoundIdBn = (await lottery.currentRoundId()) - 1n;
+    const round = await lottery.rounds(prevRoundIdBn);
+    res.json({ status: "ok", tx: tx.hash, round });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", error: err.message });
+  }
+});
+
+
+async function fetchQRNG() {
+  // use local QRNG endpoint or external provider - here we call local /qrng
+  const resp = await fetch("http://localhost:5000/qrng");
+  return resp.json();
+}
 
 const PORT = 5000;
 app.listen(PORT, () => {
