@@ -1,7 +1,7 @@
 // dashboard/src/LotteryCard.jsx
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { RPC_URL } from "./walletConfig"; // you already have RPC_URL
+import { RPC_URL } from "./Config"; // you already have RPC_URL
 // create a lotteryConfig.js or add to walletConfig
 import { LOTTERY_ADDRESS, LOTTERY_ABI } from "./lotteryConfig";
 
@@ -58,19 +58,29 @@ export default function LotteryCard() {
   }
 
   async function buyTicket() {
-    if (!provider) return;
+    if (!window.ethereum) return alert("Please connect a wallet (e.g. MetaMask)");
+
     try {
       setLoading(true);
-      // Need signer (user wallet) for buyTicket
-      const signer = new ethers.Web3Provider(window.ethereum).getSigner();
-      const contract = new ethers.Contract(LOTTERY_ADDRESS, LOTTERY_ABI, signer);
-      const tx = await contract.buyTicket({ value: 0 }); // change if ticketPrice > 0
+
+      const provider = new ethers.BrowserProvider(window.ethereum); // v6
+      const signer = await provider.getSigner();
+
+      const contract = new ethers.Contract(
+        LOTTERY_ADDRESS,
+        LOTTERY_ABI,
+        signer
+      );
+
+      const tx = await contract.buyTicket({ value: 0 }); 
       await tx.wait();
+
       setTxHash(tx.hash);
       await loadRoundData(provider);
+
     } catch (e) {
-      console.error(e);
-      alert("Buy failed: " + (e.message || e));
+      console.error("buyTicket:", e);
+      alert("Buy failed: " + (e?.message || e));
     } finally {
       setLoading(false);
     }
